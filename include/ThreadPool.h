@@ -29,6 +29,7 @@ namespace cct
 		~ThreadPool();
 
 		template<typename F, typename... Args, typename R = std::invoke_result_t<std::decay_t<F>, std::decay_t<Args>...>>
+		[[nodiscard]]
 		std::future<R> Enqueue(F&& _func, Args... _args)
 		{
 			auto packagedTask = std::make_shared<std::packaged_task<R()>>(std::bind(std::forward<F>(_func), std::forward<Args>(_args)...));
@@ -42,6 +43,16 @@ namespace cct
 			}
 			m_cv.notify_one();
 			return res;
+		}
+
+		template<typename F, typename... Args>
+		void Submit(F&& _func, Args... _args)
+		{
+			{
+				std::unique_lock lock(m_mutex);
+				m_tasks.emplace(std::bind(std::forward<F>(_func), std::forward<Args>(_args)...));
+			}
+			m_cv.notify_one();
 		}
 	};
 }

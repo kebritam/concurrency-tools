@@ -10,9 +10,26 @@ The simplest way to use is to just transfer the header and source files to your 
 ## Usage example
 ```c++
 cct::ThreadPool pool(2);
-std::future<int> 	 fut1 = pool.Enqueue([]() {std::this_thread::sleep_for(std::chrono::seconds(3)); std::cout << "nubmer1\n"; return 1; });
-std::future<std::string> fut2 = pool.Enqueue([]() {std::this_thread::sleep_for(std::chrono::seconds(3)); std::cout << "nubmer2\n"; return "2"; });
-std::future<void> 	 fut3 = pool.Enqueue([]() {std::this_thread::sleep_for(std::chrono::seconds(3)); std::cout << "nubmer3\n"; });
+std::future<int> fut1 = pool.Enqueue([]() 
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(3)); 
+		std::cout << "nubmer1\n"; return 1; 
+	});
+std::future<std::string> fut2 = pool.Enqueue([]() 
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(3)); 
+		std::cout << "nubmer2\n"; return std::string("2"); 
+	});
+std::future<void> fut3 = pool.Enqueue([]() 
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(3)); 
+		std::cout << "nubmer3\n"; 
+	});
+pool.Submit([]() 
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(3)); 
+		std::cout << "nubmer4\n"; 
+	});
 
 int res1 = fut1.get();
 std::string res2 = fut2.get();
